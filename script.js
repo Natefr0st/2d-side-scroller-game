@@ -18,6 +18,7 @@ window.addEventListener("load", function () {
             this.player = new Player(this);
             this.input = new InputHandler(this);
             this.keys = [];
+            this.ammo = 20;
         }
 
         update() {
