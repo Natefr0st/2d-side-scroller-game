@@ -1,6 +1,7 @@
 import {Player} from "./entities/Player.js";
 import {InputHandler} from "./entities/InputHandler.js";
 import {UserInterface} from "./entities/UserInterface.js";
+import {Angler1} from "./entities/Angler1.js";
 
 window.addEventListener("load", function () {
     /**
@@ -20,10 +21,14 @@ window.addEventListener("load", function () {
             this.input = new InputHandler(this);
             this.ui = new UserInterface(this);
             this.keys = [];
+            this.enemies = [];
+            this.enemyTimer = 0;
+            this.enemyInterval = 1000;
             this.ammo = 20;
             this.maxAmmo = 50;
             this.ammoTimer = 0;
             this.ammoInterval = 500;
+            this.gameOver = false;
         }
 
         update(deltaTime) {
@@ -35,11 +40,30 @@ window.addEventListener("load", function () {
             } else {
                 this.ammoTimer += deltaTime;
             }
+
+            this.enemies.forEach(enemy => {
+                enemy.update()
+            })
+            this.enemies = this.enemies.filter(enemy => !enemy.markedForDeletion);
+
+            if (this.enemyTimer > this.enemyInterval && this.gameOver === false) {
+                this.addEnemy()
+                this.enemyTimer = 0
+            } else {
+                this.enemyTimer += deltaTime;
+            }
         }
 
         draw(context) {
             this.player.draw(context);
             this.ui.draw(context);
+            this.enemies.forEach(enemy => {
+                enemy.draw(context);
+            })
+        }
+
+        addEnemy() {
+            this.enemies.push(new Angler1(this));
         }
     }
 
@@ -55,6 +79,7 @@ window.addEventListener("load", function () {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         game.update(deltaTime);
         game.draw(ctx);
+
         requestAnimationFrame(animate);
     })(0);
 });
