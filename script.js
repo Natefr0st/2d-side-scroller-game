@@ -29,9 +29,16 @@ window.addEventListener("load", function () {
             this.ammoTimer = 0;
             this.ammoInterval = 500;
             this.gameOver = false;
+            this.score = 0;
+            this.winningScore = 10;
+            this.gameTime = 0;
+            this.timeLimit = 5000;
         }
 
         update(deltaTime) {
+            if (!this.gameOver) this.gameTime += deltaTime
+            if (this.gameTime > this.timeLimit) this.gameOver = true;
+
             this.player.update();
 
             if (this.ammoTimer > this.ammoInterval) {
@@ -54,7 +61,8 @@ window.addEventListener("load", function () {
 
                         if (enemy.lives <= 0) {
                             enemy.markedForDeletion = true;
-                            this.score += enemy.score;
+                            if (this.gameOver) this.score += enemy.score;
+                            if (this.score > this.winningScore) this.gameOver = true;
                         }
                     }
                 })
