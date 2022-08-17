@@ -2,6 +2,7 @@ import {Player} from "./entities/Player.js";
 import {InputHandler} from "./entities/InputHandler.js";
 import {UserInterface} from "./entities/UserInterface.js";
 import {Angler1} from "./entities/Angler1.js";
+import {Background} from "./entities/Background.js";
 
 window.addEventListener("load", function () {
     /**
@@ -17,6 +18,7 @@ window.addEventListener("load", function () {
         constructor(width, height) {
             this.width = width;
             this.height = height;
+            this.background = new Background(this);
             this.player = new Player(this);
             this.input = new InputHandler(this);
             this.ui = new UserInterface(this);
@@ -33,12 +35,15 @@ window.addEventListener("load", function () {
             this.winningScore = 10;
             this.gameTime = 0;
             this.timeLimit = 5000;
+            this.speed = 1;
         }
 
         update(deltaTime) {
             if (!this.gameOver) this.gameTime += deltaTime
             if (this.gameTime > this.timeLimit) this.gameOver = true;
 
+            this.background.update();
+            this.background.layer4.update();
             this.player.update();
 
             if (this.ammoTimer > this.ammoInterval) {
@@ -78,11 +83,13 @@ window.addEventListener("load", function () {
         }
 
         draw(context) {
+            this.background.draw(context);
             this.player.draw(context);
             this.ui.draw(context);
             this.enemies.forEach(enemy => {
                 enemy.draw(context);
             })
+            this.background.layer4.draw(context);
         }
 
         addEnemy() {
