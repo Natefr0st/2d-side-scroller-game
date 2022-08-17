@@ -10,7 +10,7 @@ window.addEventListener("load", function () {
      */
     const canvas = document.getElementById("canvas1");
     const ctx = canvas.getContext("2d");
-    canvas.width = 1500;
+    canvas.width = 700;
     canvas.height = 500;
 
 
@@ -36,6 +36,7 @@ window.addEventListener("load", function () {
             this.gameTime = 0;
             this.timeLimit = 5000;
             this.speed = 1;
+            this.debug = true;
         }
 
         update(deltaTime) {

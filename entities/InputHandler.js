@@ -7,6 +7,8 @@ export class InputHandler {
                 this.game.keys.push(event.key);
             } else if (event.key === " ") {
                 this.game.player.shootTop();
+            } else if (event.key === "d") {
+                this.game.debug = !this.game.debug;
             }
         })
 
