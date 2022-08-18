@@ -3,6 +3,8 @@ import {InputHandler} from "./entities/InputHandler.js";
 import {UserInterface} from "./entities/UserInterface.js";
 import {Angler1} from "./entities/Angler1.js";
 import {Background} from "./entities/Background.js";
+import {Angler2} from "./entities/Angler2.js";
+import {LuckyFish} from "./entities/LuckyFish.js";
 
 window.addEventListener("load", function () {
     /**
@@ -34,7 +36,7 @@ window.addEventListener("load", function () {
             this.score = 0;
             this.winningScore = 10;
             this.gameTime = 0;
-            this.timeLimit = 5000;
+            this.timeLimit = 15000;
             this.speed = 1;
             this.debug = true;
         }
@@ -45,7 +47,7 @@ window.addEventListener("load", function () {
 
             this.background.update();
             this.background.layer4.update();
-            this.player.update();
+            this.player.update(deltaTime);
 
             if (this.ammoTimer > this.ammoInterval) {
                 if (this.ammo < this.maxAmmo) this.ammo++
@@ -58,6 +60,9 @@ window.addEventListener("load", function () {
                 enemy.update()
                 if (this.checkCollisions(this.player, enemy)) {
                     enemy.markedForDeletion = true;
+
+                    if (enemy.type === "lucky") this.player.enterPowerUp();
+                    else this.score--;
                 }
 
                 this.player.projectiles.forEach(projectile => {
@@ -67,7 +72,7 @@ window.addEventListener("load", function () {
 
                         if (enemy.lives <= 0) {
                             enemy.markedForDeletion = true;
-                            if (this.gameOver) this.score += enemy.score;
+                            this.score += enemy.score;
                             if (this.score > this.winningScore) this.gameOver = true;
                         }
                     }
@@ -94,7 +99,11 @@ window.addEventListener("load", function () {
         }
 
         addEnemy() {
-            this.enemies.push(new Angler1(this));
+            const randomize = Math.random();
+
+            if (randomize < 0.3) this.enemies.push(new Angler1(this));
+            if (randomize < 0.6) this.enemies.push(new Angler2(this));
+            else this.enemies.push(new LuckyFish(this));
         }
 
         checkCollisions(rect1, rect2) {
