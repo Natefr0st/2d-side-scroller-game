@@ -5,6 +5,7 @@ import {Angler1} from "./entities/Angler1.js";
 import {Background} from "./entities/Background.js";
 import {Angler2} from "./entities/Angler2.js";
 import {LuckyFish} from "./entities/LuckyFish.js";
+import {Particle} from "./entities/Particle.js";
 
 window.addEventListener("load", function () {
     /**
@@ -26,6 +27,7 @@ window.addEventListener("load", function () {
             this.ui = new UserInterface(this);
             this.keys = [];
             this.enemies = [];
+            this.particles = [];
             this.enemyTimer = 0;
             this.enemyInterval = 1000;
             this.ammo = 20;
@@ -56,11 +58,15 @@ window.addEventListener("load", function () {
                 this.ammoTimer += deltaTime;
             }
 
+            this.particles.forEach(particle => particle.update());
+            this.particles = this.particles.filter(particle => !particle.markedForDeletion);
             this.enemies.forEach(enemy => {
                 enemy.update()
                 if (this.checkCollisions(this.player, enemy)) {
                     enemy.markedForDeletion = true;
-
+                    for (let i = 0; i < 10; i++) {
+                        this.particles.push(new Particle(this, enemy.x + enemy.width * 0.5, enemy.y + enemy.height * 0.5));
+                    }
                     if (enemy.type === "lucky") this.player.enterPowerUp();
                     else this.score--;
                 }
@@ -69,10 +75,14 @@ window.addEventListener("load", function () {
                     if (this.checkCollisions(projectile, enemy)) {
                         enemy.lives--;
                         projectile.markedForDeletion = true;
+                        this.particles.push(new Particle(this, enemy.x + enemy.width * 0.5, enemy.y + enemy.height * 0.5));
 
                         if (enemy.lives <= 0) {
+                            for (let i = 0; i < 10; i++) {
+                                this.particles.push(new Particle(this, enemy.x + enemy.width * 0.5, enemy.y + enemy.height * 0.5));
+                            }
                             enemy.markedForDeletion = true;
-                            this.score += enemy.score;
+                            if (!this.gameOver) this.score += enemy.score;
                             if (this.score > this.winningScore) this.gameOver = true;
                         }
                     }
@@ -92,6 +102,7 @@ window.addEventListener("load", function () {
             this.background.draw(context);
             this.player.draw(context);
             this.ui.draw(context);
+            this.particles.forEach(particle => particle.draw(context));
             this.enemies.forEach(enemy => {
                 enemy.draw(context);
             })

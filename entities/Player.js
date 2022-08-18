@@ -24,9 +24,10 @@ export class Player {
         else if (this.game.keys.includes("ArrowDown")) this.speedY = this.maxSpeed;
         else this.speedY = 0;
         this.y += this.speedY;
-        /**
-         * Handle projectiles
-         */
+        // Verticle boundaries
+        if (this.y > this.game.height - this.height * 0.5) this.y = this.game.height - this.height * 0.5;
+        else if (this.y < -this.height * 0.5) this.y = -this.height * 0.5;
+        // Handle projectiles
         this.projectiles.forEach(projectile => {
             projectile.update();
         })
